@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="stylesheet" type="text/css" href="css/timedropper.min.css">
+    <link href="css/datedropper.min.css" rel="stylesheet" type="text/css">
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="js/timedropper.min.js"></script>
+    <script src="js/datedropper.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+</head>
+
+<body>
+
+    <form action="r.php" method="post">
+
+        <input type="text" name="nombres">
+        <input name="reloj" type="text" id="alarm">
+        <input name="calendario" type="text" id="fecha" data-format="Y-m-d" data-lang="es" data-min-year="2018" data-max-year="2030">
+
+        <input type="submit" value="ok">
+    </form>
+
+
+
+
+    <script>
+    $("#alarm").timeDropper({
+        autoswitch:true,
+        format:"HH:mm:00",
+        meridians:true
+    });
+    $('#fecha').dateDropper();
+    swal("Exito!", "Se ha realizado el registro.", "success");
+    </script>
+</body>
+
+</html>

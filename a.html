@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/cleave.min.js"></script>
+    <script src="js/numeral.min.js"></script>
+
+</head>
+
+<body>
+
+    <form name="formulario" onSubmit="enviarDatos(); return false">
+
+        <h4>Nombre de Titular</h4>
+        <input id="nombre" type="text" name="nombre">
+
+        <h4>Tipo de Tiquete</h4>
+        <select id="tipoTiquete">
+            <option value="1">EXTRANJERO</option>
+            <option value="2">NACIONAL</option>
+            <option value="3">NATIVO</option>
+        </select>
+
+        <div>
+            <input type="radio" id="pasaje1" name="contact" value="1" checked>
+            <label for="contactChoice2">PASAJE COMPLETO (ida + Regreso)</label>
+
+            <input type="radio" id="pasaje2" name="contact" value="2">
+            <label for="contactChoice1">PASAJE SOLO ida</label>
+        </div>
+
+        <h4>Cantidad Acompañantes</h4>
+        <input type="number" name="" id="cantidadAcompanantes" min="0" max="10" value="0">
+
+        <h4>Costo total:</h4>
+        <p id="costoTotal">0</p>
+
+        <h4>Pago en efectivo</h4>
+        <input class="my-input" name="efectivo" id="efectivo" value="0">
+
+        <h4>Cambio</h4>
+        <p id="cambio">0</p>
+
+        <br>
+        <input id="registrar" type="submit" value="ok">
+
+    </form>
+
+    <p id="resultado"></p>
+
+
+
+
+
+    <script>
+
+        var costoTiquete = 6000;
+
+        $(document).change(function (e) {
+            valor();
+
+            generarCambio();
+        });
+
+        function generarCambio() {
+            
+            v1 = numeral($('#efectivo').val()).value();
+            v2 = numeral($('#costoTotal').text()).value();
+
+            if (v1 > v2) {
+                t = v1 - v2;
+                // console.log(t);
+                t2 = numeral(t).format('$ 0,0');
+                $('#cambio').text(t2);
+            } else $('#cambio').text("Ingrese el valor en efectivo pagado por el turista");
+        }
+
+        function valor() {
+
+            function x() {
+                var cantidadPersonas = $('#cantidadAcompanantes').val();
+                if (cantidadPersonas == 0) {
+                    cantidad = 1;
+                } else {
+                    temp = $('#cantidadAcompanantes').val();
+                    cantidad = parseInt(temp) + 1;
+                }
+                return cantidad;
+            }
+
+            if ($('#pasaje1').is(':checked')) {
+                var aux = costoTiquete * x();
+                $('#costoTotal').text(numeral(aux * 2).format('$ 0,0'));
+            } else {
+                var aux = costoTiquete * x();
+                $('#costoTotal').text(numeral(aux).format('$ 0,0'));
+            }
+        }
+
+        var cleave = new Cleave('.my-input', {
+            numeral: true,
+            prefix: '$'
+        });
+
+        function objetoAjax() {
+            var xmlhttp = false;
+            try {
+                xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+            } catch (e) {
+
+                try {
+                    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                } catch (E) {
+                    xmlhttp = false;
+                }
+            }
+
+            if (!xmlhttp && typeof XMLHttpRequest != 'undefined') {
+                xmlhttp = new XMLHttpRequest();
+            }
+            return xmlhttp;
+        }
+
+
+        function enviarDatos() {
+
+            console.log($("#tipoTiquete").val());
+
+            //Recogemos los valores introducimos en los campos de texto
+            equipo = document.formulario.nombre.value;
+
+            //Aquí será donde se mostrará el resultado
+            jugador = document.getElementById('resultado');
+
+            //instanciamos el objetoAjax
+            ajax = objetoAjax();
+
+            //Abrimos una conexión AJAX pasando como parámetros el método de envío, y el archivo que realizará las operaciones deseadas
+            ajax.open("POST", "a.php", true);
+
+            //cuando el objeto XMLHttpRequest cambia de estado, la función se inicia
+            ajax.onreadystatechange = function () {
+
+                //Cuando se completa la petición, mostrará los resultados
+                if (ajax.readyState == 4) {
+
+                    //El método responseText() contiene el texto de nuestro 'consultar.php'. Por ejemplo, cualquier texto que mostremos por un 'echo'
+                    resultado.value = (ajax.responseText)
+                }
+            }
+
+            //Llamamos al método setRequestHeader indicando que los datos a enviarse están codificados como un formulario.
+            ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            //enviamos las variables a 'consulta.php'
+            ajax.send("&nombre=" + equipo)
+
+        }
+    </script>
+</body>
+
+</html>
