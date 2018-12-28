@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Sistema de ventas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+</head>
+
+<body>
+
+    <h1 class="text-center display-4 m-3">Registrar Ventas</h1>
+
+    <div class="container">
+
+        <div class="row no-gutters">
+            <div class="col-12 col-lg-6 mb-4">
+
+                <form class="was-validated">
+                    <div class="form-group">
+                        <label>TIPO DE VENTA</label>
+                        <select id="inputState" class="custom-select" required>
+                            <option value="" selected>Seleccione el Tipo de Venta</option>
+                            <option value="1">Ticket NACIONAL (SALIDA + REGRESO)</option>
+                            <option value="2">Ticket EXTRANJERO (SALIDA + REGRESO)</option>
+                            <option value="3">Ticket NATIVO (habitante de Córdoba/Sancipriano) (SALIDA + REGRESO)</option>
+                            <option value="4">Ticket NACIONAL (SOLO SALIDA)</option>
+                            <option value="5">Ticket EXTRANJERO (SOLO SALIDA)</option>
+                            <option value="6">Ticket NATIVO (habitante de Córdoba/Sancipriano) (SOLO SALIDA)</option>
+                        </select>
+                        <div class="invalid-feedback">Debe seleccionar una opción</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>NOMBRE DEL PASAJERO</label>
+                        <input type="text" minlength="8" class="form-control text-uppercase" placeholder="NOMBRE"
+                            required>
+                        <div class="invalid-feedback">El nombre debe contener como mínimo 8 caracteres</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>CANTIDAD DE ACOMPAÑANTES</label>
+                        <select class="custom-select">
+                            <option value="0" selected>0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                        </select>
+                    </div>
+
+
+                    <button type="submit" class="btn btn-primary">Registrar Venta</button>
+                </form>
+                
+            </div>
+            
+            <div class="col-12 col-lg-6 mb-4 d-flex justify-content-center">
+                <div class="">
+                    
+                    <h3>Detalles de Venta</h3>
+                    <h5>Nombre Turista:</h5>
+                    <p>Julanito</p>
+                    <h5>Cantidad de personas a viajar:</h5>
+                    <p>1</p>
+                    <h2>Costo a Pagar:</h2>
+                    <p>$ 12.000</p>
+                    <button type="submit" class="btn btn-success">Confirmar Compra</button>
+                    <button type="submit" class="btn btn-warning">Editar</button>
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</body>
+
+</html>
