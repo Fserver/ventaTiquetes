@@ -1,23 +1,39 @@
 <?php
-    if (isset($_POST['nombre']) ) {
-        if ( !empty($_POST['nombre'] ) ) {
+if (isset($_POST['nombre'])) {
+    if (!empty($_POST['nombre'] && strlen($_POST['nombre']) > 5)) {
 
-            $nombres = $_POST["nombre"];
-            $fecha = $_POST["hora"];
-            $longitud = strlen($nombres);
+        $nombres = $_POST["nombre"];
+        // $fecha = $_POST["fecha"];
 
-            if ($longitud>=5) {
+        date_default_timezone_set('America/Bogota');
+        $fecha = date("Y-m-d H:i:s");
 
-                include "conexion.php";
-            
-                $c = conectar();
-            
-                $sql = "INSERT INTO datos (nombres, fecha) VALUES('{$nombres}', '{$fecha}');";
-                $c->query($sql);
+        $tipoTiket = $_POST["tipoPersona"];
+        $idaVenida = $_POST["pasaje"];
 
-                echo "Registro exitoso!";
+        if ($_POST["viajeros"] == null) {
+            $totalViajantes = 1;
+        } elseif ($_POST["viajeros"] >= 0) {
+            $totalViajantes = $_POST["viajeros"] + 1;
+        }
+        $vendedor = 1;
 
-            }else echo "Este nombre no tiene 4 caracteres";
-            
-        }else echo "Debe introducir un nombre con mas de 4 caracteres";
+        include "conexion.php";
+
+        $c = conectar();
+
+        $sql = "INSERT INTO usuario (nombre, fecha, tiquete, pasaje, total, vendedor) VALUES('{$nombres}', '{$fecha}', '{$tipoTiket}', '{$idaVenida}', '{$totalViajantes}', '{$vendedor}');";
+        $c->query($sql);
+
+        $nombres = null;
+        $fecha = null;
+        $tipoTiket = null;
+        $idaVenida = null;
+        $totalViajantes = null;
+        $vendedor = null;
+
+        echo "1";
+    } else {
+        echo "2";
     }
+} else {echo "null";}
