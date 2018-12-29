@@ -10,25 +10,26 @@
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/cleave.min.js"></script>
     <script src="js/numeral.min.js"></script>
+    <script src="js/moment.js"></script>
 
 </head>
 
 <body>
+    <h1 id="hora">Cargando...</h1>
 
     <form name="formulario" onSubmit="enviarDatos(); return false">
 
         <h4>Nombre de Titular</h4>
         <input id="nombre" type="text" name="nombre">
 
-        <h4>Tipo de Tiquete</h4>
+        <h4>Persona</h4>
         <select id="tipoTiquete">
-            <option value="1">EXTRANJERO</option>
-            <option value="2">NACIONAL</option>
-            <option value="3">NATIVO</option>
+            <option value='0'>Seleccione</option>
         </select>
 
+        <h4>Tipo de Tiquete</h4>
         <div>
-            <input type="radio" id="pasaje1" name="contact" value="1" checked>
+            <input type="radio" id="pasaje1" name="contact" value="1">
             <label for="contactChoice2">PASAJE COMPLETO (ida + Regreso)</label>
 
             <input type="radio" id="pasaje2" name="contact" value="2">
@@ -36,10 +37,12 @@
         </div>
 
         <h4>Cantidad Acompañantes</h4>
-        <input type="number" name="" id="cantidadAcompanantes" min="0" max="10" value="0">
+        <input type="number" id="cantidadAcompanantes" min="0" max="10" maxlength="2" value="0">
 
         <h4>Costo total:</h4>
         <p id="costoTotal">0</p>
+
+        <hr>
 
         <h4>Pago en efectivo</h4>
         <input class="my-input" name="efectivo" id="efectivo" value="0">
@@ -52,7 +55,10 @@
 
     </form>
 
-    <p id="resultado"></p>
+    <div id="resultado"></div>
+    <div id="r2"></div>
+
+
 
 
 
@@ -60,38 +66,50 @@
 
     <script>
 
-        var costoTiquete = 6000;
+        var costoTiquete = 0;
+        var cantidadPersonas = 0;
 
-        $(document).change(function (e) {
-            valor();
+        $(document).ready(function () {
 
-            generarCambio();
+            cargarCostos();
+
+            setInterval(() => {
+
+                $('#hora').text(moment().format('YYYY-M-D H:mm:ss'));
+
+            }, 1000);
         });
 
-        function generarCambio() {
-            
-            v1 = numeral($('#efectivo').val()).value();
-            v2 = numeral($('#costoTotal').text()).value();
+        $(document).change(function () {
 
-            if (v1 > v2) {
-                t = v1 - v2;
-                // console.log(t);
-                t2 = numeral(t).format('$ 0,0');
-                $('#cambio').text(t2);
-            } else $('#cambio').text("Ingrese el valor en efectivo pagado por el turista");
+            costoT();
+            generarCambio();
+            valor();
+
+        });
+
+        $("#cantidadAcompanantes").click(function () {
+            valor();
+        });
+
+        function costoT() {
+            h = $('#tipoTiquete').val();
+            if (h > 0) {
+                costoTiquete = respuesta[h - 1].id;
+                console.log('C: ' + costoTiquete);
+            } else costoTiquete = 0;
         }
 
         function valor() {
 
             function x() {
-                var cantidadPersonas = $('#cantidadAcompanantes').val();
+                cantidadPersonas = $('#cantidadAcompanantes').val();
                 if (cantidadPersonas == 0) {
-                    cantidad = 1;
+                    return cantidad = 1;
                 } else {
                     temp = $('#cantidadAcompanantes').val();
-                    cantidad = parseInt(temp) + 1;
+                    return cantidad = parseInt(temp) + 1;
                 }
-                return cantidad;
             }
 
             if ($('#pasaje1').is(':checked')) {
@@ -101,6 +119,19 @@
                 var aux = costoTiquete * x();
                 $('#costoTotal').text(numeral(aux).format('$ 0,0'));
             }
+        }
+
+        function generarCambio() {
+
+            v1 = numeral($('#efectivo').val()).value();
+            v2 = numeral($('#costoTotal').text()).value();
+
+            if (v1 > v2) {
+                t = v1 - v2;
+                // console.log(t);
+                t2 = numeral(t).format('$ 0,0');
+                $('#cambio').text(t2);
+            } else $('#cambio').text("Ingrese el valor en efectivo pagado por el turista");
         }
 
         var cleave = new Cleave('.my-input', {
@@ -127,16 +158,11 @@
             return xmlhttp;
         }
 
-
         function enviarDatos() {
-
-            console.log($("#tipoTiquete").val());
 
             //Recogemos los valores introducimos en los campos de texto
             equipo = document.formulario.nombre.value;
-
-            //Aquí será donde se mostrará el resultado
-            jugador = document.getElementById('resultado');
+            equipo2 = $('#hora').text();
 
             //instanciamos el objetoAjax
             ajax = objetoAjax();
@@ -151,7 +177,8 @@
                 if (ajax.readyState == 4) {
 
                     //El método responseText() contiene el texto de nuestro 'consultar.php'. Por ejemplo, cualquier texto que mostremos por un 'echo'
-                    resultado.value = (ajax.responseText)
+                    respuesta = (ajax.responseText)
+                    $('#resultado').html(respuesta);
                 }
             }
 
@@ -159,8 +186,27 @@
             ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
             //enviamos las variables a 'consulta.php'
-            ajax.send("&nombre=" + equipo)
+            ajax.send("&nombre=" + equipo + "&hora=" + equipo2)
 
+        }
+
+        function cargarCostos() {
+            ajax = objetoAjax();
+            ajax.open("POST", "c.php", true);
+            ajax.onreadystatechange = function () {
+                if (ajax.readyState == 4) {
+                    respuesta = JSON.parse(ajax.responseText)
+
+                    contador = -1;
+                    respuesta.forEach(element => {
+                        contador++;
+                        $('#tipoTiquete').append("<option value='" + respuesta[contador].id + "'> " + respuesta[contador].nombres + " </option>");
+                    });
+
+                    $('#r2').text();
+                }
+            }
+            ajax.send();
         }
     </script>
 </body>
