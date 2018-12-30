@@ -4,7 +4,7 @@ include "conexion.php";
 
 $c = conectar();
 
-$sql = "SELECT id, nombres FROM datos";
+$sql = "SELECT id, nombres, costo FROM datos";
 $v1 = $c->query($sql);
 
 // while($fila = $v1 -> fetch_assoc()){
