@@ -25,7 +25,7 @@
         <form name="formulario" onSubmit="enviarDatos(); return false">
 
             <h4>Nombre de Titular</h4>
-            <input id="nombre" type="text" required>
+            <input id="nombre" type="text" minlength="6" required>
 
             <h4>Tipo Persona</h4>
             <select id="tipoPersona" required>
@@ -69,12 +69,10 @@
         var costoTiquete = 0;
         var cantidadPersonas = 0;
         var val = 0;
-        var opPasaje = 1;
 
         $(document).ready(function () {
 
             cargarCostos();
-            pasaje();
 
             setInterval(() => {
 
@@ -93,21 +91,10 @@
             } else if (val < 0) $("#cantidadAcompanantes").val(0);
         }
 
-        function pasaje() {
-            if ($('input:radio[name=check]:checked').val()==1) {
-                opPasaje = 1;
-            } else if ($('input:radio[name=check]:checked').val()==2) {
-                opPasaje = 2;
-            }
-        }
-
         $(document).change(function () {
-
             costoT();
-            generarCambio();
             valor();
             mayora();
-
         });
 
         $("#cantidadAcompanantes").click(function () {
@@ -118,7 +105,6 @@
             h = $('#tipoPersona').val();
             if (h > 0) {
                 costoTiquete = lista[h - 1].costo;
-                console.log('Costo Tiquete: ' + costoTiquete);
             } else costoTiquete = 0;
         }
 
@@ -141,18 +127,23 @@
                 var aux = costoTiquete * x();
                 $('#costoTotal').text(numeral(aux).format('$ 0,0'));
             }
+            generarCambio();
         }
+
+        $('#efectivo').keydown(function (e) {
+            generarCambio();
+            console.log(numeral('#costoTotal').format('0,0'));
+        });
 
         function generarCambio() {
 
-            v1 = numeral($('#efectivo').val()).value();
-            v2 = numeral($('#costoTotal').text()).value();
+            if (numeral($('#efectivo').val()).value() > numeral($('#costoTotal').text()).value()) {
+                t = numeral($('#efectivo').val()).value() - numeral($('#costoTotal').text()).value();
 
-            if (v1 > v2) {
-                t = v1 - v2;
-                // console.log(t);
-                t2 = numeral(t).format('$ 0,0');
-                $('#cambio').text(t2);
+                $('#cambio').text(numeral(t).format('$ 0,0'));
+                t = 0;
+            } else if (numeral('#costoTotal').format('0,0') == 0) {
+                $('#cambio').text("Ingrese el valor en efectivo pagado por el turista");
             } else $('#cambio').text("Ingrese el valor en efectivo pagado por el turista");
         }
 
@@ -220,7 +211,7 @@
                             //El método responseText() contiene el texto de nuestro 'consultar.php'. Por ejemplo, cualquier texto que mostremos por un 'echo'
                             respuesta = (ajax.responseText)
 
-                            if (respuesta=='1') {
+                            if (respuesta == '1') {
 
                                 swal("Registro Exitoso!", {
                                     icon: "success",
@@ -229,7 +220,7 @@
                                 });
 
                                 $(document.formulario)[0].reset();
-                            } else if (respuesta=='2') {
+                            } else if (respuesta == '2') {
 
                                 swal("Debe llenar correctamente todos los campos", {
                                     icon: "info",
@@ -261,6 +252,7 @@
                         contador++;
                         $('#tipoPersona').append("<option value='" + lista[contador].id + "'> " + lista[contador].nombres + " </option>");
                     });
+                    contador = -1;
                 }
             }
             ajax.send();
